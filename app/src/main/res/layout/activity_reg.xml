@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#d5d5d5"
+    android:weightSum="1">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/userId"
+        android:layout_gravity="center_horizontal"
+        android:background="#ffffff"
+        android:layout_margin="5dp"
+        android:hint="ID конверта, например: KISCd490775c" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/secret"
+        android:layout_gravity="center_horizontal"
+        android:background="#ffffff"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Секрет, например: aa7fc547" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button3"
+        android:id="@+id/button3"
+        android:layout_gravity="center_horizontal"
+        android:onClick="onRunClick" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal"
+        android:background="#ffffff"
+        android:layout_margin="5dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Close"
+        android:id="@+id/button4"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_weight="0"
+        android:onClick="onCloseClick" />
+</LinearLayout>

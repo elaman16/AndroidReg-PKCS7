@@ -2,4 +2,6 @@
     <string name="app_name">Reg&amp;PKCS7</string>
     <string name="button2">Формирование ЭЦП</string>
     <string name="button1">Начальная инициализация пользователя</string>
+    <string name="button3">Запустить</string>
+    <string name="Close">Закрыть</string>
 </resources>
