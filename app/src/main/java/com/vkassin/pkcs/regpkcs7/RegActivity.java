@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -33,7 +37,23 @@ import kz.gamma.SampleTumarCSPLibFunction;
 /**
  * Created by vadimkassin on 2/11/16.
  */
+
 public class RegActivity extends Activity {
+
+    private class TextViewUpdater implements Runnable{
+        private String txt = "Start";
+        @Override
+        public void run() {
+            mLog.setText(txt);
+        }
+        public void setText(String txt){
+            this.txt = txt;
+        }
+        public String getText() {
+            return txt;
+        }
+
+    }
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -42,6 +62,9 @@ public class RegActivity extends Activity {
     private GoogleApiClient client;
     private EditText mUserId;
     private EditText mSecret;
+    private TextView mLog;
+    private TextViewUpdater textViewUpdater;
+    private Handler textViewUpdaterHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +76,16 @@ public class RegActivity extends Activity {
 
         mUserId = (EditText)findViewById(R.id.userId);
         mSecret = (EditText)findViewById(R.id.secret);
+        mLog = (TextView)findViewById(R.id.textView);
+
+        mLog.setMovementMethod(new ScrollingMovementMethod());
+
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        textViewUpdater = new TextViewUpdater();
+        textViewUpdaterHandler = new Handler(Looper.getMainLooper());
     }
 
     public void onCloseClick(View view) {
@@ -68,13 +98,18 @@ public class RegActivity extends Activity {
         String prof = createProfile(dirpath, "key", "1234567890");
 
         try {
-            byte[] req = RegActivity.generateCMPIRRequest(prof, mUserId.getText().toString(), mSecret.getText().toString());
+            logMessage("Лицензия: " + getLicName());
+            logMessage("Формирование запроса на сервер");
+            logMessage("Профайл: " + prof);
+            byte[] req = generateCMPIRRequest(prof, mUserId.getText().toString(), mSecret.getText().toString());
+            logMessage("Запрос на: http://91.195.226.33:62260");
             byte[] resp1 = sendRequest("http://91.195.226.33:62260", req);
+            logMessage("Запрос на проверку");
             boolean ver = SampleTumarCSPLibFunction.verifyCMPSetIRResponce(prof, mSecret.getText().toString(), resp1);
             if(ver) {
-                Log.i("Reg.Activity", "Verify success");
+                logMessage("Verify success");
             } else {
-                Log.i("Reg.Activity", "Verify error");
+                logMessage("Verify error");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -137,7 +172,7 @@ public class RegActivity extends Activity {
      * @param secret  - секретное слово
      * @return сформированный запрос
      */
-    public static byte[] generateCMPIRRequest(String profile, String userID, String secret) {
+    public byte[] generateCMPIRRequest(String profile, String userID, String secret) {
         byte[] ret = null;
         Number hProv = 0;
         Number hKey = 0;
@@ -145,25 +180,23 @@ public class RegActivity extends Activity {
         Number hExpKey = 0;
 
         try {
-            // Создание контекста CSP
+            logMessage("Создание контекста CSP");
             hProv = TumarCspFunctions.cpAcquireContext(profile, LibraryWrapper.CRYPT_NEWKEYSET, 0);
-            // Создание ключа подписи CALG_EC256_512G_A
+            logMessage("Создание ключа подписи CALG_EC256_512G_A");
             hKey = TumarCspFunctions.cpGenKey(hProv, 0xAA3A, LibraryWrapper.CRYPT_EXPORTABLE);
-            //
             hKey2 = TumarCspFunctions.cpGenKey(hProv, 0xA045, LibraryWrapper.CRYPT_EXPORTABLE);
-            // Создание ключа экспорта запроса CMP/Initialization Request. CALG_CMP_KEY is 0xa05a
+            logMessage("Создание ключа экспорта запроса CMP/Initialization Request. CALG_CMP_KEY is 0xa05a");
             hExpKey = TumarCspFunctions.cpGenKey(hProv, LibraryWrapper.CALG_CMP_KEY, LibraryWrapper.CRYPT_EXPORTABLE);
-            //
             TumarCspFunctions.cpSetKeyParam(hProv, hExpKey, 79, UtilCM.intToByte(hKey2.intValue(), LibraryWrapper.SUN_CPU_ENDIAN_LITTLE), 0);
-            // Установка алгоритма формирования ключа
+            logMessage("Установка алгоритма формирования ключа");
             TumarCspFunctions.cpSetKeyParam(hProv, hExpKey, LibraryWrapper.KP_CMP_HASH_ALG, UtilCM.intToByte(LibraryWrapper.CALG_SHA_160, LibraryWrapper.SUN_CPU_ENDIAN_LITTLE), 0);
-            // Установка алгоритма защиты с общим секретом 0x8005
+            logMessage("Установка алгоритма защиты с общим секретом 0x8005");
             TumarCspFunctions.cpSetKeyParam(hProv, hExpKey, LibraryWrapper.KP_CMP_MAC_ALG, UtilCM.intToByte(LibraryWrapper.CALG_MAC, LibraryWrapper.SUN_CPU_ENDIAN_LITTLE), 0);
-            // Установка идентификатора пользователя
+            logMessage("Установка идентификатора пользователя");
             TumarCspFunctions.cpSetKeyParam(hProv, hExpKey, LibraryWrapper.KP_CMP_SND_KID, userID.getBytes(), 0);
-            // Установка секрета
+            logMessage("Установка секрета");
             TumarCspFunctions.cpSetKeyParam(hProv, hExpKey, LibraryWrapper.KP_CMP_SECRET, DataConverter.stringToByteArray(secret), 0);
-            // Формирование запроса
+            logMessage("Формирование запроса");
             ret = TumarCspFunctions.cpExportKeyData(hProv, hKey, hExpKey, LibraryWrapper.PUBLICKEYBLOB_CMP, 0);
             TumarCspFunctions.cpDestroyKey(hProv, hKey);
             hKey = 0;
@@ -274,10 +307,29 @@ public class RegActivity extends Activity {
         return ret;
     }
 
-    void logMessage(String msg) {
+    void logMessage(final String msg) {
 
         Log.i("Reg.Activity", msg);
+        String text = textViewUpdater.getText();
+//                String text = mLog.getText().toString();
+//                mLog.setText(text + "\n ----------------------------------------- \n" + msg);
 
+        textViewUpdater.setText(text + "\n ----------------------------------------- \n" + msg);
+        textViewUpdaterHandler.post(textViewUpdater);
+    }
+
+    /**
+     * @return Функция выводит имя организации на которую была сформиована лицензия
+     */
+    private String getLicName(){
+        String ret = null;
+        Number hProv = TumarCspFunctions.cpAcquireContext("", LibraryWrapper.CRYPT_VERIFYCONTEXT, 0);
+        byte[] blob = TumarCspFunctions.cpGetProvParamByte(hProv, 66, LibraryWrapper.CRYPT_FIRST, 1);
+        if(blob!=null){
+            ret = new String(blob);
+        }
+        TumarCspFunctions.cpReleaseContext(hProv, 0);
+        return ret;
     }
 
     @Override
