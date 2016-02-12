@@ -12,7 +12,8 @@
         android:layout_gravity="center_horizontal"
         android:background="#ffffff"
         android:layout_margin="5dp"
-        android:hint="ID конверта, например: KISCd490775c" />
+        android:hint="ID конверта, например: KISCd490775c"
+        android:text="KISCd490775c" />
 
     <EditText
         android:layout_width="match_parent"
@@ -23,7 +24,8 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:hint="Секрет, например: aa7fc547" />
+        android:hint="Секрет, например: aa7fc547"
+        android:text="aa7fc547" />
 
     <Button
         android:layout_width="wrap_content"
