@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="mobile.crypto.gammaprov">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/mobile.crypto.gammaprov.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
