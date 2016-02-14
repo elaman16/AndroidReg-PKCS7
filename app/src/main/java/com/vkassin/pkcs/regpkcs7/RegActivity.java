@@ -89,6 +89,7 @@ public class RegActivity extends Activity {
     }
 
     public void onCloseClick(View view) {
+
         finish();
     }
 

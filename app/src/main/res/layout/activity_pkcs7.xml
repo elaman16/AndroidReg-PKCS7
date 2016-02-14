@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#d5d5d5"
+    android:weightSum="1">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textId"
+        android:background="#ffffff"
+        android:layout_margin="5dp"
+        android:hint="Данные для ЭЦП, например: EFGH" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button3"
+        android:id="@+id/button3"
+        android:layout_gravity="center_horizontal"
+        android:onClick="onRunClick" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/textView1"
+        android:layout_gravity="center_horizontal"
+        android:background="#ffffff"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:scrollbars = "vertical"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Email"
+        android:id="@+id/button6"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_weight="0"
+        android:onClick="onEmailClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Close"
+        android:id="@+id/button7"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_weight="0"
+        android:onClick="onCloseClick" />
+
+</LinearLayout>

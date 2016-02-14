@@ -37,6 +37,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onSignClick(View view) {
+
+        Intent intent = new Intent(MainActivity.this, Pkcs7Activity.class);
+        startActivity(intent);
     }
 
     /**
